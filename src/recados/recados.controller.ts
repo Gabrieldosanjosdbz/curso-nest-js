@@ -1,8 +1,13 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Patch, Post, Query, UseInterceptors, UsePipes } from '@nestjs/common';
 import { RecadosService } from './recados.service';
 import { CreateRecadoDto } from './dto/create-recado.dto';
 import { UpdateRecadoDto } from './dto/update-recado.dto';
 import { PaginationDTO } from 'src/common/dto/pagination.dto';
+import { ParseIntIdPipe } from 'src/common/pipes/parse-int-id.pipe';
+import { AddHeaderInterceptor } from 'src/common/interceptors/add-header.interceptor';
+import { TimingConnectionInterceptor } from 'src/common/interceptors/timing-connection.interceptor';
+import { ErrorHandlingInterceptor } from 'src/common/interceptors/error-handling.interceptor';
+import { ChangeDataInterceptor } from 'src/common/interceptors/change-data.interceptor';
 
 // CRUD
 // Create -> POST        -> Criar um recado
@@ -17,6 +22,7 @@ import { PaginationDTO } from 'src/common/dto/pagination.dto';
 // DTO - Data Transfer Object -> Objeto de transferencia de dados
 // DTO - Objeto simples -> Validar dados / Transformar dados
 
+@UseInterceptors(ChangeDataInterceptor)
 @Controller('recados')
 export class RecadosController {
     constructor(private readonly recadosService: RecadosService){}
@@ -24,6 +30,7 @@ export class RecadosController {
     // Encontrar todos os recados
     @HttpCode(HttpStatus.OK)
     @Get()
+    @UseInterceptors(TimingConnectionInterceptor, ErrorHandlingInterceptor)
     async findAll(@Query() paginationDTO: PaginationDTO){
         // return `Essa rota retorna todos os recados. Limite=${limit}, Offset=${offset}`;
         const recados = await this.recadosService.findAll(paginationDTO);
@@ -31,8 +38,9 @@ export class RecadosController {
     }
 
     // Encontrar um recados
+    @UseInterceptors(AddHeaderInterceptor, ErrorHandlingInterceptor)
     @Get(':id')
-    findOne(@Param('id', ParseIntPipe) id_referencia: number){
+    findOne(@Param('id') id_referencia: number){
         return this.recadosService.findOne(id_referencia);
     }
 
@@ -42,12 +50,12 @@ export class RecadosController {
     }
 
     @Patch(':id')
-    update(@Param('id', ParseIntPipe) id: number, @Body() updateRecadoDto: UpdateRecadoDto){
+    update(@Param('id') id: number, @Body() updateRecadoDto: UpdateRecadoDto){
         return this.recadosService.update(id, updateRecadoDto);
     }
 
     @Delete(':id')
-    remove(@Param('id', ParseIntPipe) id: number){
+    remove(@Param('id') id: number){
         return this.recadosService.remove(id);
     }
 }

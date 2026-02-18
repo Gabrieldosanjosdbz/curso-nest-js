@@ -59,7 +59,7 @@ export class RecadosService {
         });
 
         if(recado) return recado;
-        throw new HttpException('Recado não encontrando', HttpStatus.NOT_FOUND);
+        throw new NotFoundException('Recado não encontrando');
         // throw new NotFoundException('Recado não encontrado');
     }
 
