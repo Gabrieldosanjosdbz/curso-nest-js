@@ -1,9 +1,8 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Patch, Post, Query, UseInterceptors, UsePipes } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Patch, Post, Query, Req, UseInterceptors, UsePipes } from '@nestjs/common';
 import { RecadosService } from './recados.service';
 import { CreateRecadoDto } from './dto/create-recado.dto';
 import { UpdateRecadoDto } from './dto/update-recado.dto';
 import { PaginationDTO } from 'src/common/dto/pagination.dto';
-import { ParseIntIdPipe } from 'src/common/pipes/parse-int-id.pipe';
 import { AddHeaderInterceptor } from 'src/common/interceptors/add-header.interceptor';
 import { TimingConnectionInterceptor } from 'src/common/interceptors/timing-connection.interceptor';
 import { ErrorHandlingInterceptor } from 'src/common/interceptors/error-handling.interceptor';
@@ -22,7 +21,7 @@ import { ChangeDataInterceptor } from 'src/common/interceptors/change-data.inter
 // DTO - Data Transfer Object -> Objeto de transferencia de dados
 // DTO - Objeto simples -> Validar dados / Transformar dados
 
-@UseInterceptors(ChangeDataInterceptor)
+
 @Controller('recados')
 export class RecadosController {
     constructor(private readonly recadosService: RecadosService){}
@@ -30,9 +29,8 @@ export class RecadosController {
     // Encontrar todos os recados
     @HttpCode(HttpStatus.OK)
     @Get()
-    @UseInterceptors(TimingConnectionInterceptor, ErrorHandlingInterceptor)
-    async findAll(@Query() paginationDTO: PaginationDTO){
-        // return `Essa rota retorna todos os recados. Limite=${limit}, Offset=${offset}`;
+    async findAll(@Query() paginationDTO: PaginationDTO, @Req() req: Request){  //acessando os dados da req
+        console.log('RecadosController', req['user']); //acessando apenas o array que criamos no middleware 
         const recados = await this.recadosService.findAll(paginationDTO);
         return recados;
     }

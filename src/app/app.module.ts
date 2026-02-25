@@ -1,9 +1,15 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { RecadosModule } from 'src/recados/recados.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PessoasModule } from 'src/pessoas/pessoas.module';
+import { SimpleMiddleware } from 'src/common/middlewares/simple.middleware';
+import { OutroMiddleware } from 'src/common/middlewares/outro.middleware';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
+import { MyExceptionFilter } from 'src/common/filters/my-exception.filter';
+import { ErrorExceptionFilter } from 'src/common/filters/error-exception.filter';
+import { IsAdminGuard } from 'src/common/guards/is-admin.guard';
 
 @Module({
   imports: [
@@ -21,6 +27,25 @@ import { PessoasModule } from 'src/pessoas/pessoas.module';
     PessoasModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_FILTER,
+      useClass: ErrorExceptionFilter
+    },
+    {
+      provide: APP_GUARD,
+      useClass: IsAdminGuard
+    }
+  ],
 })
-export class AppModule {}
+
+// Aplicando o middleware globalmente
+export class AppModule implements NestModule{
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(SimpleMiddleware, OutroMiddleware).forRoutes({ // Pode usar 1 ou mais middlewares assim ou criando outro consumer.apply
+      path: '*',                  //definindo quais rotas terão o middleware   
+      method: RequestMethod.ALL  //definindo quais métodos HTTP dessas rotas terão o middleware
+    })
+  }
+}
