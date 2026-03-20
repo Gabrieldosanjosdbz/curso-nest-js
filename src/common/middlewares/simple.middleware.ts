@@ -16,7 +16,7 @@ export class SimpleMiddleware implements NestMiddleware {
             req['user'] = {         
                 nome: 'Luiz',
                 sobrenome: 'Otavio',
-                role: 'user'
+                role: 'admin'
             };
 
             // Modificando o cabeçalho do response

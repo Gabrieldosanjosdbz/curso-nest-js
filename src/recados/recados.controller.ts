@@ -7,6 +7,8 @@ import { AddHeaderInterceptor } from 'src/common/interceptors/add-header.interce
 import { TimingConnectionInterceptor } from 'src/common/interceptors/timing-connection.interceptor';
 import { ErrorHandlingInterceptor } from 'src/common/interceptors/error-handling.interceptor';
 import { ChangeDataInterceptor } from 'src/common/interceptors/change-data.interceptor';
+import { UrlParam } from 'src/common/params/url-param.decorator';
+import { ReqDataParam } from 'src/common/params/req-data-param.decorator';
 
 // CRUD
 // Create -> POST        -> Criar um recado
@@ -29,8 +31,10 @@ export class RecadosController {
     // Encontrar todos os recados
     @HttpCode(HttpStatus.OK)
     @Get()
-    async findAll(@Query() paginationDTO: PaginationDTO, @Req() req: Request){  //acessando os dados da req
-        console.log('RecadosController', req['user']); //acessando apenas o array que criamos no middleware 
+    async findAll(@Query() paginationDTO: PaginationDTO, @Req() req: Request, @UrlParam() url: String, @ReqDataParam('method') method){  //acessando os dados da req e da url
+        // console.log('RecadosController', req['user']); //acessando apenas o array que criamos no middleware 
+        console.log(url);
+        console.log(method);
         const recados = await this.recadosService.findAll(paginationDTO);
         return recados;
     }
