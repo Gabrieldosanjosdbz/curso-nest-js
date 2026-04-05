@@ -23,7 +23,10 @@ export class Recado{
 
     // Many Recado To One Pessoa
     // Sempre a ManyToOne que recebe a FK, então, na tabela recados, vai ser criado uma coluna para receber ela.
-    @ManyToOne(() => Pessoa, pessoa => pessoa.recadoEnviados, {onDelete: 'CASCADE', onUpdate: 'CASCADE'}) 
+    @ManyToOne(() => Pessoa, pessoa => pessoa.recadosEnviados, {
+  onDelete: 'CASCADE',
+  onUpdate: 'CASCADE'
+})
     @JoinColumn({ name: 'de' })
     de: Pessoa;
 

@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:16
-    container_name: postgres_nest
+    container_name: postgres_nest_curso
     restart: always
     environment:
       POSTGRES_DB: nestdb
@@ -14,7 +14,7 @@ services:
 
   api:
     build: .
-    container_name: nest_api
+    container_name: nest_api_curso
     restart: always
     command: sh -c "npm install && npm run start:dev"
     ports:
